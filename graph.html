@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 500px;
+                 background-color: #0b0d17;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 500px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_0", "label": "chunk_0", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Rat", "label": "Rat", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "cell", "label": "cell", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Plant", "label": "Plant", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "plant", "label": "plant", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_1", "label": "chunk_1", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_2", "label": "chunk_2", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_5", "label": "chunk_5", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_6", "label": "chunk_6", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_9", "label": "chunk_9", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_10", "label": "chunk_10", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_11", "label": "chunk_11", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_12", "label": "chunk_12", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_13", "label": "chunk_13", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_14", "label": "chunk_14", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_15", "label": "chunk_15", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_16", "label": "chunk_16", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_17", "label": "chunk_17", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_18", "label": "chunk_18", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_19", "label": "chunk_19", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_20", "label": "chunk_20", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_21", "label": "chunk_21", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_22", "label": "chunk_22", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_25", "label": "chunk_25", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_27", "label": "chunk_27", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_28", "label": "chunk_28", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_29", "label": "chunk_29", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_30", "label": "chunk_30", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_31", "label": "chunk_31", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_32", "label": "chunk_32", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_33", "label": "chunk_33", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_34", "label": "chunk_34", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_35", "label": "chunk_35", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_36", "label": "chunk_36", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_39", "label": "chunk_39", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_40", "label": "chunk_40", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_42", "label": "chunk_42", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_43", "label": "chunk_43", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_44", "label": "chunk_44", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_45", "label": "chunk_45", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_46", "label": "chunk_46", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_47", "label": "chunk_47", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_48", "label": "chunk_48", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_49", "label": "chunk_49", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_52", "label": "chunk_52", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_53", "label": "chunk_53", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_55", "label": "chunk_55", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_56", "label": "chunk_56", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_57", "label": "chunk_57", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_58", "label": "chunk_58", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_59", "label": "chunk_59", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_60", "label": "chunk_60", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_61", "label": "chunk_61", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_62", "label": "chunk_62", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_63", "label": "chunk_63", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_64", "label": "chunk_64", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_65", "label": "chunk_65", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_67", "label": "chunk_67", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_68", "label": "chunk_68", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_69", "label": "chunk_69", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_71", "label": "chunk_71", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_72", "label": "chunk_72", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_74", "label": "chunk_74", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_76", "label": "chunk_76", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_78", "label": "chunk_78", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_79", "label": "chunk_79", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_80", "label": "chunk_80", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_81", "label": "chunk_81", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_82", "label": "chunk_82", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_83", "label": "chunk_83", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_84", "label": "chunk_84", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_87", "label": "chunk_87", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_88", "label": "chunk_88", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_24", "label": "chunk_24", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_37", "label": "chunk_37", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_38", "label": "chunk_38", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_51", "label": "chunk_51", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_54", "label": "chunk_54", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_66", "label": "chunk_66", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_77", "label": "chunk_77", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_85", "label": "chunk_85", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_86", "label": "chunk_86", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_3", "label": "chunk_3", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_4", "label": "chunk_4", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_7", "label": "chunk_7", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_8", "label": "chunk_8", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_23", "label": "chunk_23", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_26", "label": "chunk_26", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_41", "label": "chunk_41", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_50", "label": "chunk_50", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "LEO", "label": "LEO", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_70", "label": "chunk_70", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_73", "label": "chunk_73", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_75", "label": "chunk_75", "shape": "dot", "size": 10, "type": "paper"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "ISS", "label": "ISS", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Bacteria", "label": "Bacteria", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "bacteria", "label": "bacteria", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "microbe", "label": "microbe", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Microbe", "label": "Microbe", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Yeast", "label": "Yeast", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "growth", "label": "growth", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "dna", "label": "dna", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "stress", "label": "stress", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "microgravity", "label": "microgravity", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Mouse", "label": "Mouse", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "Human", "label": "Human", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "human", "label": "human", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#39FF14", "font": {"color": "white"}, "id": "MARS", "label": "MARS", "shape": "dot", "size": 10, "type": "entity"}, {"color": "#1f77b4", "font": {"color": "white"}, "id": "chunk_89", "label": "chunk_89", "shape": "dot", "size": 10, "type": "paper"}]);
+                  edges = new vis.DataSet([{"from": "chunk_0", "to": "Rat", "width": 1}, {"from": "chunk_0", "to": "cell", "width": 1}, {"from": "chunk_0", "to": "Plant", "width": 1}, {"from": "chunk_0", "to": "plant", "width": 1}, {"from": "Rat", "to": "chunk_1", "width": 1}, {"from": "Rat", "to": "chunk_2", "width": 1}, {"from": "Rat", "to": "chunk_5", "width": 1}, {"from": "Rat", "to": "chunk_6", "width": 1}, {"from": "Rat", "to": "chunk_9", "width": 1}, {"from": "Rat", "to": "chunk_10", "width": 1}, {"from": "Rat", "to": "chunk_11", "width": 1}, {"from": "Rat", "to": "chunk_12", "width": 1}, {"from": "Rat", "to": "chunk_13", "width": 1}, {"from": "Rat", "to": "chunk_14", "width": 1}, {"from": "Rat", "to": "chunk_15", "width": 1}, {"from": "Rat", "to": "chunk_16", "width": 1}, {"from": "Rat", "to": "chunk_17", "width": 1}, {"from": "Rat", "to": "chunk_18", "width": 1}, {"from": "Rat", "to": "chunk_19", "width": 1}, {"from": "Rat", "to": "chunk_20", "width": 1}, {"from": "Rat", "to": "chunk_21", "width": 1}, {"from": "Rat", "to": "chunk_22", "width": 1}, {"from": "Rat", "to": "chunk_25", "width": 1}, {"from": "Rat", "to": "chunk_27", "width": 1}, {"from": "Rat", "to": "chunk_28", "width": 1}, {"from": "Rat", "to": "chunk_29", "width": 1}, {"from": "Rat", "to": "chunk_30", "width": 1}, {"from": "Rat", "to": "chunk_31", "width": 1}, {"from": "Rat", "to": "chunk_32", "width": 1}, {"from": "Rat", "to": "chunk_33", "width": 1}, {"from": "Rat", "to": "chunk_34", "width": 1}, {"from": "Rat", "to": "chunk_35", "width": 1}, {"from": "Rat", "to": "chunk_36", "width": 1}, {"from": "Rat", "to": "chunk_39", "width": 1}, {"from": "Rat", "to": "chunk_40", "width": 1}, {"from": "Rat", "to": "chunk_42", "width": 1}, {"from": "Rat", "to": "chunk_43", "width": 1}, {"from": "Rat", "to": "chunk_44", "width": 1}, {"from": "Rat", "to": "chunk_45", "width": 1}, {"from": "Rat", "to": "chunk_46", "width": 1}, {"from": "Rat", "to": "chunk_47", "width": 1}, {"from": "Rat", "to": "chunk_48", "width": 1}, {"from": "Rat", "to": "chunk_49", "width": 1}, {"from": "Rat", "to": "chunk_52", "width": 1}, {"from": "Rat", "to": "chunk_53", "width": 1}, {"from": "Rat", "to": "chunk_55", "width": 1}, {"from": "Rat", "to": "chunk_56", "width": 1}, {"from": "Rat", "to": "chunk_57", "width": 1}, {"from": "Rat", "to": "chunk_58", "width": 1}, {"from": "Rat", "to": "chunk_59", "width": 1}, {"from": "Rat", "to": "chunk_60", "width": 1}, {"from": "Rat", "to": "chunk_61", "width": 1}, {"from": "Rat", "to": "chunk_62", "width": 1}, {"from": "Rat", "to": "chunk_63", "width": 1}, {"from": "Rat", "to": "chunk_64", "width": 1}, {"from": "Rat", "to": "chunk_65", "width": 1}, {"from": "Rat", "to": "chunk_67", "width": 1}, {"from": "Rat", "to": "chunk_68", "width": 1}, {"from": "Rat", "to": "chunk_69", "width": 1}, {"from": "Rat", "to": "chunk_71", "width": 1}, {"from": "Rat", "to": "chunk_72", "width": 1}, {"from": "Rat", "to": "chunk_74", "width": 1}, {"from": "Rat", "to": "chunk_76", "width": 1}, {"from": "Rat", "to": "chunk_78", "width": 1}, {"from": "Rat", "to": "chunk_79", "width": 1}, {"from": "Rat", "to": "chunk_80", "width": 1}, {"from": "Rat", "to": "chunk_81", "width": 1}, {"from": "Rat", "to": "chunk_82", "width": 1}, {"from": "Rat", "to": "chunk_83", "width": 1}, {"from": "Rat", "to": "chunk_84", "width": 1}, {"from": "Rat", "to": "chunk_87", "width": 1}, {"from": "Rat", "to": "chunk_88", "width": 1}, {"from": "cell", "to": "chunk_1", "width": 1}, {"from": "cell", "to": "chunk_9", "width": 1}, {"from": "cell", "to": "chunk_14", "width": 1}, {"from": "cell", "to": "chunk_16", "width": 1}, {"from": "cell", "to": "chunk_17", "width": 1}, {"from": "cell", "to": "chunk_19", "width": 1}, {"from": "cell", "to": "chunk_20", "width": 1}, {"from": "cell", "to": "chunk_24", "width": 1}, {"from": "cell", "to": "chunk_25", "width": 1}, {"from": "cell", "to": "chunk_36", "width": 1}, {"from": "cell", "to": "chunk_37", "width": 1}, {"from": "cell", "to": "chunk_38", "width": 1}, {"from": "cell", "to": "chunk_39", "width": 1}, {"from": "cell", "to": "chunk_40", "width": 1}, {"from": "cell", "to": "chunk_42", "width": 1}, {"from": "cell", "to": "chunk_43", "width": 1}, {"from": "cell", "to": "chunk_47", "width": 1}, {"from": "cell", "to": "chunk_51", "width": 1}, {"from": "cell", "to": "chunk_52", "width": 1}, {"from": "cell", "to": "chunk_53", "width": 1}, {"from": "cell", "to": "chunk_54", "width": 1}, {"from": "cell", "to": "chunk_55", "width": 1}, {"from": "cell", "to": "chunk_56", "width": 1}, {"from": "cell", "to": "chunk_57", "width": 1}, {"from": "cell", "to": "chunk_58", "width": 1}, {"from": "cell", "to": "chunk_59", "width": 1}, {"from": "cell", "to": "chunk_60", "width": 1}, {"from": "cell", "to": "chunk_61", "width": 1}, {"from": "cell", "to": "chunk_62", "width": 1}, {"from": "cell", "to": "chunk_63", "width": 1}, {"from": "cell", "to": "chunk_64", "width": 1}, {"from": "cell", "to": "chunk_65", "width": 1}, {"from": "cell", "to": "chunk_66", "width": 1}, {"from": "cell", "to": "chunk_67", "width": 1}, {"from": "cell", "to": "chunk_68", "width": 1}, {"from": "cell", "to": "chunk_77", "width": 1}, {"from": "cell", "to": "chunk_78", "width": 1}, {"from": "cell", "to": "chunk_80", "width": 1}, {"from": "cell", "to": "chunk_81", "width": 1}, {"from": "cell", "to": "chunk_82", "width": 1}, {"from": "cell", "to": "chunk_83", "width": 1}, {"from": "cell", "to": "chunk_84", "width": 1}, {"from": "cell", "to": "chunk_85", "width": 1}, {"from": "cell", "to": "chunk_86", "width": 1}, {"from": "cell", "to": "chunk_87", "width": 1}, {"from": "cell", "to": "chunk_88", "width": 1}, {"from": "Plant", "to": "chunk_1", "width": 1}, {"from": "Plant", "to": "chunk_2", "width": 1}, {"from": "Plant", "to": "chunk_3", "width": 1}, {"from": "Plant", "to": "chunk_4", "width": 1}, {"from": "Plant", "to": "chunk_7", "width": 1}, {"from": "Plant", "to": "chunk_8", "width": 1}, {"from": "Plant", "to": "chunk_11", "width": 1}, {"from": "Plant", "to": "chunk_17", "width": 1}, {"from": "Plant", "to": "chunk_18", "width": 1}, {"from": "Plant", "to": "chunk_22", "width": 1}, {"from": "Plant", "to": "chunk_23", "width": 1}, {"from": "Plant", "to": "chunk_24", "width": 1}, {"from": "Plant", "to": "chunk_25", "width": 1}, {"from": "Plant", "to": "chunk_26", "width": 1}, {"from": "Plant", "to": "chunk_27", "width": 1}, {"from": "Plant", "to": "chunk_28", "width": 1}, {"from": "Plant", "to": "chunk_29", "width": 1}, {"from": "Plant", "to": "chunk_30", "width": 1}, {"from": "Plant", "to": "chunk_31", "width": 1}, {"from": "Plant", "to": "chunk_32", "width": 1}, {"from": "Plant", "to": "chunk_33", "width": 1}, {"from": "Plant", "to": "chunk_35", "width": 1}, {"from": "Plant", "to": "chunk_36", "width": 1}, {"from": "Plant", "to": "chunk_37", "width": 1}, {"from": "Plant", "to": "chunk_38", "width": 1}, {"from": "Plant", "to": "chunk_39", "width": 1}, {"from": "Plant", "to": "chunk_40", "width": 1}, {"from": "Plant", "to": "chunk_41", "width": 1}, {"from": "Plant", "to": "chunk_42", "width": 1}, {"from": "Plant", "to": "chunk_43", "width": 1}, {"from": "Plant", "to": "chunk_44", "width": 1}, {"from": "Plant", "to": "chunk_45", "width": 1}, {"from": "Plant", "to": "chunk_46", "width": 1}, {"from": "Plant", "to": "chunk_47", "width": 1}, {"from": "Plant", "to": "chunk_48", "width": 1}, {"from": "Plant", "to": "chunk_49", "width": 1}, {"from": "Plant", "to": "chunk_50", "width": 1}, {"from": "Plant", "to": "chunk_51", "width": 1}, {"from": "Plant", "to": "chunk_52", "width": 1}, {"from": "Plant", "to": "chunk_53", "width": 1}, {"from": "Plant", "to": "chunk_54", "width": 1}, {"from": "Plant", "to": "chunk_55", "width": 1}, {"from": "Plant", "to": "chunk_56", "width": 1}, {"from": "Plant", "to": "chunk_57", "width": 1}, {"from": "Plant", "to": "chunk_58", "width": 1}, {"from": "Plant", "to": "chunk_59", "width": 1}, {"from": "Plant", "to": "chunk_60", "width": 1}, {"from": "Plant", "to": "chunk_61", "width": 1}, {"from": "Plant", "to": "chunk_62", "width": 1}, {"from": "Plant", "to": "chunk_63", "width": 1}, {"from": "Plant", "to": "chunk_64", "width": 1}, {"from": "Plant", "to": "chunk_65", "width": 1}, {"from": "Plant", "to": "chunk_66", "width": 1}, {"from": "plant", "to": "chunk_1", "width": 1}, {"from": "plant", "to": "chunk_2", "width": 1}, {"from": "plant", "to": "chunk_3", "width": 1}, {"from": "plant", "to": "chunk_4", "width": 1}, {"from": "plant", "to": "chunk_7", "width": 1}, {"from": "plant", "to": "chunk_8", "width": 1}, {"from": "plant", "to": "chunk_11", "width": 1}, {"from": "plant", "to": "chunk_17", "width": 1}, {"from": "plant", "to": "chunk_18", "width": 1}, {"from": "plant", "to": "chunk_22", "width": 1}, {"from": "plant", "to": "chunk_23", "width": 1}, {"from": "plant", "to": "chunk_24", "width": 1}, {"from": "plant", "to": "chunk_25", "width": 1}, {"from": "plant", "to": "chunk_26", "width": 1}, {"from": "plant", "to": "chunk_27", "width": 1}, {"from": "plant", "to": "chunk_28", "width": 1}, {"from": "plant", "to": "chunk_29", "width": 1}, {"from": "plant", "to": "chunk_30", "width": 1}, {"from": "plant", "to": "chunk_31", "width": 1}, {"from": "plant", "to": "chunk_32", "width": 1}, {"from": "plant", "to": "chunk_33", "width": 1}, {"from": "plant", "to": "chunk_35", "width": 1}, {"from": "plant", "to": "chunk_36", "width": 1}, {"from": "plant", "to": "chunk_37", "width": 1}, {"from": "plant", "to": "chunk_38", "width": 1}, {"from": "plant", "to": "chunk_39", "width": 1}, {"from": "plant", "to": "chunk_40", "width": 1}, {"from": "plant", "to": "chunk_41", "width": 1}, {"from": "plant", "to": "chunk_42", "width": 1}, {"from": "plant", "to": "chunk_43", "width": 1}, {"from": "plant", "to": "chunk_44", "width": 1}, {"from": "plant", "to": "chunk_45", "width": 1}, {"from": "plant", "to": "chunk_46", "width": 1}, {"from": "plant", "to": "chunk_47", "width": 1}, {"from": "plant", "to": "chunk_48", "width": 1}, {"from": "plant", "to": "chunk_49", "width": 1}, {"from": "plant", "to": "chunk_50", "width": 1}, {"from": "plant", "to": "chunk_51", "width": 1}, {"from": "plant", "to": "chunk_52", "width": 1}, {"from": "plant", "to": "chunk_53", "width": 1}, {"from": "plant", "to": "chunk_54", "width": 1}, {"from": "plant", "to": "chunk_55", "width": 1}, {"from": "plant", "to": "chunk_56", "width": 1}, {"from": "plant", "to": "chunk_57", "width": 1}, {"from": "plant", "to": "chunk_58", "width": 1}, {"from": "plant", "to": "chunk_59", "width": 1}, {"from": "plant", "to": "chunk_60", "width": 1}, {"from": "plant", "to": "chunk_61", "width": 1}, {"from": "plant", "to": "chunk_62", "width": 1}, {"from": "plant", "to": "chunk_63", "width": 1}, {"from": "plant", "to": "chunk_64", "width": 1}, {"from": "plant", "to": "chunk_65", "width": 1}, {"from": "plant", "to": "chunk_66", "width": 1}, {"from": "chunk_3", "to": "LEO", "width": 1}, {"from": "LEO", "to": "chunk_4", "width": 1}, {"from": "LEO", "to": "chunk_5", "width": 1}, {"from": "LEO", "to": "chunk_6", "width": 1}, {"from": "LEO", "to": "chunk_7", "width": 1}, {"from": "LEO", "to": "chunk_8", "width": 1}, {"from": "LEO", "to": "chunk_9", "width": 1}, {"from": "LEO", "to": "chunk_13", "width": 1}, {"from": "LEO", "to": "chunk_17", "width": 1}, {"from": "LEO", "to": "chunk_34", "width": 1}, {"from": "LEO", "to": "chunk_37", "width": 1}, {"from": "LEO", "to": "chunk_46", "width": 1}, {"from": "LEO", "to": "chunk_47", "width": 1}, {"from": "LEO", "to": "chunk_61", "width": 1}, {"from": "LEO", "to": "chunk_69", "width": 1}, {"from": "LEO", "to": "chunk_70", "width": 1}, {"from": "LEO", "to": "chunk_71", "width": 1}, {"from": "LEO", "to": "chunk_72", "width": 1}, {"from": "LEO", "to": "chunk_73", "width": 1}, {"from": "LEO", "to": "chunk_75", "width": 1}, {"from": "LEO", "to": "chunk_76", "width": 1}, {"from": "LEO", "to": "chunk_77", "width": 1}, {"from": "LEO", "to": "chunk_78", "width": 1}, {"from": "LEO", "to": "chunk_80", "width": 1}, {"from": "LEO", "to": "chunk_81", "width": 1}, {"from": "LEO", "to": "chunk_83", "width": 1}, {"from": "LEO", "to": "chunk_86", "width": 1}, {"from": "chunk_4", "to": "ISS", "width": 1}, {"from": "ISS", "to": "chunk_20", "width": 1}, {"from": "ISS", "to": "chunk_24", "width": 1}, {"from": "ISS", "to": "chunk_25", "width": 1}, {"from": "ISS", "to": "chunk_26", "width": 1}, {"from": "ISS", "to": "chunk_27", "width": 1}, {"from": "ISS", "to": "chunk_28", "width": 1}, {"from": "ISS", "to": "chunk_29", "width": 1}, {"from": "ISS", "to": "chunk_30", "width": 1}, {"from": "ISS", "to": "chunk_31", "width": 1}, {"from": "ISS", "to": "chunk_32", "width": 1}, {"from": "ISS", "to": "chunk_33", "width": 1}, {"from": "ISS", "to": "chunk_34", "width": 1}, {"from": "ISS", "to": "chunk_37", "width": 1}, {"from": "ISS", "to": "chunk_39", "width": 1}, {"from": "ISS", "to": "chunk_41", "width": 1}, {"from": "ISS", "to": "chunk_42", "width": 1}, {"from": "ISS", "to": "chunk_43", "width": 1}, {"from": "ISS", "to": "chunk_44", "width": 1}, {"from": "ISS", "to": "chunk_45", "width": 1}, {"from": "ISS", "to": "chunk_46", "width": 1}, {"from": "ISS", "to": "chunk_48", "width": 1}, {"from": "ISS", "to": "chunk_49", "width": 1}, {"from": "ISS", "to": "chunk_50", "width": 1}, {"from": "ISS", "to": "chunk_51", "width": 1}, {"from": "ISS", "to": "chunk_55", "width": 1}, {"from": "ISS", "to": "chunk_56", "width": 1}, {"from": "ISS", "to": "chunk_57", "width": 1}, {"from": "ISS", "to": "chunk_59", "width": 1}, {"from": "ISS", "to": "chunk_60", "width": 1}, {"from": "ISS", "to": "chunk_61", "width": 1}, {"from": "ISS", "to": "chunk_62", "width": 1}, {"from": "ISS", "to": "chunk_63", "width": 1}, {"from": "ISS", "to": "chunk_64", "width": 1}, {"from": "ISS", "to": "chunk_65", "width": 1}, {"from": "ISS", "to": "chunk_67", "width": 1}, {"from": "ISS", "to": "chunk_68", "width": 1}, {"from": "ISS", "to": "chunk_69", "width": 1}, {"from": "ISS", "to": "chunk_78", "width": 1}, {"from": "ISS", "to": "chunk_80", "width": 1}, {"from": "ISS", "to": "chunk_81", "width": 1}, {"from": "ISS", "to": "chunk_82", "width": 1}, {"from": "ISS", "to": "chunk_83", "width": 1}, {"from": "ISS", "to": "chunk_86", "width": 1}, {"from": "chunk_8", "to": "Bacteria", "width": 1}, {"from": "chunk_8", "to": "bacteria", "width": 1}, {"from": "Bacteria", "to": "chunk_10", "width": 1}, {"from": "Bacteria", "to": "chunk_11", "width": 1}, {"from": "Bacteria", "to": "chunk_17", "width": 1}, {"from": "Bacteria", "to": "chunk_18", "width": 1}, {"from": "Bacteria", "to": "chunk_19", "width": 1}, {"from": "bacteria", "to": "chunk_10", "width": 1}, {"from": "bacteria", "to": "chunk_11", "width": 1}, {"from": "bacteria", "to": "chunk_17", "width": 1}, {"from": "bacteria", "to": "chunk_18", "width": 1}, {"from": "bacteria", "to": "chunk_19", "width": 1}, {"from": "chunk_9", "to": "microbe", "width": 1}, {"from": "chunk_9", "to": "Microbe", "width": 1}, {"from": "microbe", "to": "chunk_84", "width": 1}, {"from": "Microbe", "to": "chunk_84", "width": 1}, {"from": "chunk_10", "to": "Yeast", "width": 1}, {"from": "chunk_10", "to": "growth", "width": 1}, {"from": "Yeast", "to": "chunk_11", "width": 1}, {"from": "Yeast", "to": "chunk_36", "width": 1}, {"from": "growth", "to": "chunk_24", "width": 1}, {"from": "growth", "to": "chunk_25", "width": 1}, {"from": "growth", "to": "chunk_26", "width": 1}, {"from": "growth", "to": "chunk_30", "width": 1}, {"from": "growth", "to": "chunk_31", "width": 1}, {"from": "growth", "to": "chunk_33", "width": 1}, {"from": "growth", "to": "chunk_36", "width": 1}, {"from": "growth", "to": "chunk_37", "width": 1}, {"from": "growth", "to": "chunk_39", "width": 1}, {"from": "growth", "to": "chunk_40", "width": 1}, {"from": "growth", "to": "chunk_42", "width": 1}, {"from": "growth", "to": "chunk_43", "width": 1}, {"from": "growth", "to": "chunk_44", "width": 1}, {"from": "growth", "to": "chunk_45", "width": 1}, {"from": "growth", "to": "chunk_48", "width": 1}, {"from": "growth", "to": "chunk_49", "width": 1}, {"from": "growth", "to": "chunk_50", "width": 1}, {"from": "growth", "to": "chunk_51", "width": 1}, {"from": "growth", "to": "chunk_55", "width": 1}, {"from": "growth", "to": "chunk_56", "width": 1}, {"from": "growth", "to": "chunk_58", "width": 1}, {"from": "growth", "to": "chunk_59", "width": 1}, {"from": "growth", "to": "chunk_60", "width": 1}, {"from": "growth", "to": "chunk_62", "width": 1}, {"from": "growth", "to": "chunk_63", "width": 1}, {"from": "growth", "to": "chunk_65", "width": 1}, {"from": "chunk_16", "to": "dna", "width": 1}, {"from": "dna", "to": "chunk_18", "width": 1}, {"from": "dna", "to": "chunk_27", "width": 1}, {"from": "dna", "to": "chunk_34", "width": 1}, {"from": "dna", "to": "chunk_35", "width": 1}, {"from": "dna", "to": "chunk_38", "width": 1}, {"from": "dna", "to": "chunk_46", "width": 1}, {"from": "dna", "to": "chunk_47", "width": 1}, {"from": "dna", "to": "chunk_69", "width": 1}, {"from": "dna", "to": "chunk_84", "width": 1}, {"from": "chunk_17", "to": "stress", "width": 1}, {"from": "stress", "to": "chunk_39", "width": 1}, {"from": "stress", "to": "chunk_41", "width": 1}, {"from": "stress", "to": "chunk_42", "width": 1}, {"from": "stress", "to": "chunk_54", "width": 1}, {"from": "stress", "to": "chunk_55", "width": 1}, {"from": "stress", "to": "chunk_56", "width": 1}, {"from": "stress", "to": "chunk_57", "width": 1}, {"from": "stress", "to": "chunk_58", "width": 1}, {"from": "stress", "to": "chunk_59", "width": 1}, {"from": "stress", "to": "chunk_60", "width": 1}, {"from": "stress", "to": "chunk_61", "width": 1}, {"from": "stress", "to": "chunk_65", "width": 1}, {"from": "chunk_43", "to": "microgravity", "width": 1}, {"from": "microgravity", "to": "chunk_62", "width": 1}, {"from": "microgravity", "to": "chunk_63", "width": 1}, {"from": "microgravity", "to": "chunk_64", "width": 1}, {"from": "microgravity", "to": "chunk_65", "width": 1}, {"from": "chunk_67", "to": "Mouse", "width": 1}, {"from": "Mouse", "to": "chunk_68", "width": 1}, {"from": "Mouse", "to": "chunk_69", "width": 1}, {"from": "Mouse", "to": "chunk_70", "width": 1}, {"from": "Mouse", "to": "chunk_71", "width": 1}, {"from": "Mouse", "to": "chunk_72", "width": 1}, {"from": "Mouse", "to": "chunk_73", "width": 1}, {"from": "Mouse", "to": "chunk_74", "width": 1}, {"from": "Mouse", "to": "chunk_75", "width": 1}, {"from": "Mouse", "to": "chunk_76", "width": 1}, {"from": "Mouse", "to": "chunk_77", "width": 1}, {"from": "Mouse", "to": "chunk_78", "width": 1}, {"from": "Mouse", "to": "chunk_79", "width": 1}, {"from": "Mouse", "to": "chunk_80", "width": 1}, {"from": "Mouse", "to": "chunk_81", "width": 1}, {"from": "Mouse", "to": "chunk_82", "width": 1}, {"from": "Mouse", "to": "chunk_83", "width": 1}, {"from": "Mouse", "to": "chunk_84", "width": 1}, {"from": "Mouse", "to": "chunk_86", "width": 1}, {"from": "Mouse", "to": "chunk_87", "width": 1}, {"from": "Mouse", "to": "chunk_88", "width": 1}, {"from": "chunk_68", "to": "Human", "width": 1}, {"from": "chunk_68", "to": "human", "width": 1}, {"from": "Human", "to": "chunk_79", "width": 1}, {"from": "Human", "to": "chunk_81", "width": 1}, {"from": "Human", "to": "chunk_84", "width": 1}, {"from": "Human", "to": "chunk_85", "width": 1}, {"from": "Human", "to": "chunk_86", "width": 1}, {"from": "Human", "to": "chunk_87", "width": 1}, {"from": "Human", "to": "chunk_88", "width": 1}, {"from": "human", "to": "chunk_79", "width": 1}, {"from": "human", "to": "chunk_81", "width": 1}, {"from": "human", "to": "chunk_84", "width": 1}, {"from": "human", "to": "chunk_85", "width": 1}, {"from": "human", "to": "chunk_86", "width": 1}, {"from": "human", "to": "chunk_87", "width": 1}, {"from": "human", "to": "chunk_88", "width": 1}, {"from": "chunk_86", "to": "MARS", "width": 1}, {"from": "MARS", "to": "chunk_88", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 200,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
