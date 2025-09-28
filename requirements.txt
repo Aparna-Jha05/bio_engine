@@ -6,3 +6,6 @@ plotly
 groq
 PyMuPDF
 networkx
+scikit-learn
+seaborn
+matplotlib
