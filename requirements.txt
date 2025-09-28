@@ -1,0 +1,8 @@
+streamlit
+sentence-transformers
+faiss-cpu
+pyvis
+plotly
+groq
+PyMuPDF
+networkx
