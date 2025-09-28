@@ -10,7 +10,9 @@ from pyvis.network import Network
 from sentence_transformers import SentenceTransformer
 from groq import Groq
 from io import BytesIO
-
+import os
+# Instead of st.secrets, use:
+api_key = os.getenv("GROQ_API_KEY")
 # -------------------------
 # SETUP
 # -------------------------
